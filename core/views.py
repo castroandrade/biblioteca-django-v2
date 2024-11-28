@@ -1,8 +1,9 @@
-from .models import Livro, Categoria, Autor
-from .serializers import LivroSerializer, CategoriaSerializer, AutorSerializer
+from .models import Livro, Categoria, Autor, Colecao
+from .serializers import LivroSerializer, CategoriaSerializer, AutorSerializer, ColecaoSerializer
 from .filters import LivroFilter
-from rest_framework import generics
-
+from rest_framework import generics, permissions
+from . import custom_permissions
+from rest_framework.authentication import TokenAuthentication
 
 class LivroList(generics.ListCreateAPIView):
     queryset = Livro.objects.all()
@@ -43,3 +44,24 @@ class AutorDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Autor.objects.all()
     serializer_class = AutorSerializer
     name = "autor-detail"
+
+
+class ColecaoListCreate(generics.ListCreateAPIView):
+    queryset = Colecao.objects.all()
+    serializer_class = ColecaoSerializer
+    name = "colecao-list-create"
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
+
+    def perform_create(self, serializer):
+        serializer.save(colecionador=self.request.user)
+
+class ColecaoDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Colecao.objects.all()
+    serializer_class = ColecaoSerializer
+    name = "colecao-detail"
+    permission_classes = (
+        permissions.IsAuthenticatedOrReadOnly,
+        custom_permissions.IsCurrentUserOwnerOrReadOnly,
+    )
+    authentication_classes = [TokenAuthentication]

@@ -39,19 +39,35 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'core.apps.CoreConfig',
     'rest_framework',
-    'django_filters'
+    'django_filters',
+    'rest_framework.authtoken',
+    'drf_spectacular',
+    'corsheaders',
 ]
 
 REST_FRAMEWORK = {
-    "DEFAULT_PAGINATION_CLASS": "core.pagination.LimitOffsetPaginationWithUpperBound",
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "PAGE_SIZE": 5,
+    "MAX_PAGE_SIZE": 15,
     "DEFAULT_FILTER_BACKENDS": (
         "django_filters.rest_framework.DjangoFilterBackend",
         "rest_framework.filters.OrderingFilter",
         "rest_framework.filters.SearchFilter",
     ),
-
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "API Biblioteca",
+    "DESCRIPTION": "API para gerenciar a biblioteca",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+}
+
+CORS_ALLOWED_ORIGINS = [
+    "http://192.168.1.100",
+]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -61,6 +77,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
 
 ROOT_URLCONF = 'biblioteca.urls'
